@@ -1,57 +1,73 @@
 <div class="row">
   <div class="col-6 m-auto">
-  <div class="card m-auto">
-    <div class="card-header">
-      Register
-    </div>
-    <div class="card-body">
+    <div class="card m-auto">
+      <div class="card-header">
+        Register
+      </div>
+      <div class="card-body">
       <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-        <div class="form-group col-12 m-2">
+          <div class="form-group col-12">
             <label for="name" class="form-label">Name</label>
             <input type="text" class="form-control" formControlName="userName">
-            <span *ngIf="!userName.valid && (userName.touched || userSubmited)" class="error-block">Please Enter Name</span>
+            <div class="form-text text-danger" *ngIf="userName.errors?.['required'] && (userName.touched || userName.dirty || userSubmited)">
+                  User Name is Required.
+            </div>
+            <div class="form-text text-danger" *ngIf="userName.errors?.['minlength'] && (userName.touched || userName.dirty)">
+              User Name atleast more than 2 character.
+            </div>
+            <div class="form-text text-danger" *ngIf="userName.errors?.['pattern'] && (userName.touched || userName.dirty)">
+              User Name start with alphabet.
+            </div>
         </div>
-
-        <div class="form-group col-12 m-2">
+        <div class="form-group col-12">
           <label for="email" class="form-label">Email</label>
           <input type="text" class="form-control" formControlName="email">
-          <span *ngIf="!email.valid && (email.touched || userSubmited)" class="error-block">
-            <span *ngIf="email.hasError('required')">
-              Please Enter Email
-            </span>
-            <span *ngIf="email.hasError('email')">
-              Please Enter Valid Email
-            </span>
-          </span>
+          <div class="text-danger form-text" *ngIf="Email.errors?.['required'] && (Email.touched || Email.dirty || userSubmited)">
+              Email Id is Required.
+          </div>
+          <!-- <div class="text-danger form-text" *ngIf="Email.errors?.['email'] && (Email.touched || Email.dirty)">
+              Email Name is Invalid.
+          </div> -->
+          <div class="text-danger form-text" *ngIf="Email.hasError('email')">
+              Pleasr Provide Valid Email Id.
+          </div>
         </div>
-
-        <div class="form-group col-12 m-2">
-          <label for="passwrod" class="form-label">Password</label>
+        <div class="form-group col-12">
+          <label for="pwd" class="form-label">Password</label>
           <input type="password" class="form-control" formControlName="pwd">
-          <span *ngIf="!pwd.valid && (pwd.touched || userSubmited)" class="error-block">
-            <span *ngIf="pwd.errors?.['required']">Please Enter Password</span>
-            <span *ngIf="pwd.errors?.['minlength']">Password should not be less than 8 character</span>
-          </span>
+          <div class="form-text text-danger" *ngIf="Pwd.errors?.['required'] && (Pwd.touched || Pwd.dirty || userSubmited)">
+              Password is Required.
         </div>
-
-        <div class="form-group col-12 m-2">
-          <label for="cpassword" class="form-label">Confirm Password</label>
+          <div class="form-text text-danger" *ngIf="Pwd.errors?.['minlength'] || Pwd.errors?.['maxlength'] && (Pwd.touched || Pwd.dirty)">
+              Password Should be at least 8 and at the max 15 character long.
+          </div>
+        </div>
+        <div class="form-group col-12">
+          <label for="cpwd" class="form-label">Confirm Password</label>
           <input type="password" class="form-control" formControlName="cpwd">
-          <span *ngIf="!cpwd.valid && (cpwd.touched || userSubmited)" class="error-block">
-            <span *ngIf="cpwd.hasError('required')">Please Enter Confirm Password</span>
-          </span>
-          <span *ngIf="registrationForm.hasError('notmatched') && cpwd.valid">Password not matched</span>
+          <div class="form-text text-danger" *ngIf="Cpwd.errors?.['required'] && (Cpwd.touched || Cpwd.dirty || userSubmited)">
+              Confirm Password is Required.
         </div>
-
-        <div class="form-group col-12 m-2">
+        <div class="form-text text-danger" *ngIf="registrationForm.hasError('notmatched') && Cpwd.valid">
+          Password not Matched.
+        </div>
+        </div>
+        <div class="form-group col-12">
           <label for="mobile" class="form-label">Mobile</label>
           <input type="text" class="form-control" formControlName="mobile">
-          <span *ngIf="!mobile.valid && (mobile.touched || userSubmited)" class="error-block">Please Enter Mobile</span>
+          <div class="form-text text-danger" *ngIf="mobile.errors?.['required'] && (mobile.touched || mobile.dirty || userSubmited)">
+              Mobile Number is Required.
+          </div>
+         <div class="form-text text-danger" *ngIf="mobile.errors?.['maxlength'] && (mobile.touched || mobile.dirty)">
+              Mobile Number should be 10 digits.
+         </div>
+         <div class="form-text text-danger" *ngIf="mobile.errors?.['pattern'] && (mobile.touched || mobile.dirty)">
+              only Numbers Allow.
+          </div>
         </div>
-
         <div class="form-group col-12 mt-3">
-          <button type="submit" class="btn btn-primary">Save</button>
-          <button type="reset" class="btn btn-secondary ms-2">Cancel</button>
+          <button [disabled]="!registrationForm.valid" type="submit" class="btn btn-primary">Save</button> &nbsp;
+          <button type="reset" class="btn btn-secondary">Cancel</button>
         </div>
       </form>
     </div>
