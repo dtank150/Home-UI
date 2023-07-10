@@ -39,7 +39,20 @@ export class PropertyListComponent implements OnInit {
             }
         );
     }
-
-
+    OnFilter(){
+      this.SearchCity = this.City;
+    }
+    OnClear(){
+      this.SearchCity = '';
+      this.City = '';
+    }
+    OnSort(){
+      if(this.SortDirection === 'desc'){
+        this.SortDirection = 'asc';
+      }
+      else{
+        this.SortDirection ='desc';
+      }
+    }
 
 }
