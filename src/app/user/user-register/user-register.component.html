@@ -2,7 +2,7 @@
   <div class="col-6 m-auto">
     <div class="card m-auto">
       <div class="card-header">
-        Register
+        <h3>Register</h3>
       </div>
       <div class="card-body">
       <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
@@ -34,11 +34,11 @@
         </div>
         <div class="form-group col-12">
           <label for="pwd" class="form-label">Password</label>
-          <input type="password" class="form-control" formControlName="pwd">
-          <div class="form-text text-danger" *ngIf="Pwd.errors?.['required'] && (Pwd.touched || Pwd.dirty || userSubmited)">
+          <input type="password" class="form-control" formControlName="password">
+          <div class="form-text text-danger" *ngIf="password.errors?.['required'] && (password.touched || password.dirty || userSubmited)">
               Password is Required.
         </div>
-          <div class="form-text text-danger" *ngIf="Pwd.errors?.['minlength'] || Pwd.errors?.['maxlength'] && (Pwd.touched || Pwd.dirty)">
+          <div class="form-text text-danger" *ngIf="password.errors?.['minlength'] || password.errors?.['maxlength'] && (password.touched || password.dirty)">
               Password Should be at least 8 and at the max 15 character long.
           </div>
         </div>

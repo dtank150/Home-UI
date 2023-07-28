@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AppRoutingModule } from './app-routing.module';
@@ -16,7 +16,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { UserRegisterComponent } from './user/user-register/user-register.component';
 import { UserLoginComponent } from './user/user-login/user-login.component';
-import { UserService } from './service/user.service';
 import { AlertifyService } from './service/alertify.service';
 import { AuthService } from './service/auth.service';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
@@ -25,6 +24,9 @@ import { PropertyDetailsResolverService } from './property/property-detail/prope
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { FilterPipe } from './Pipes/filter.pipe';
 import { SortPipe } from './Pipes/sort.pipe';
+import { HttpErrorInterceptorService } from './service/httperor-interceptor.service';
+import { DatePipe } from '@angular/common';
+import { PhotoEditorComponent } from './property/photo-editor/photo-editor.component';
 
 const appRoutes: Routes = [
   {path:'',component:PropertyListComponent},
@@ -47,7 +49,8 @@ const appRoutes: Routes = [
     UserRegisterComponent,
     UserLoginComponent,
     FilterPipe,
-    SortPipe
+    SortPipe,
+    PhotoEditorComponent
 
    ],
   imports: [
@@ -62,15 +65,21 @@ const appRoutes: Routes = [
     TabsModule.forRoot(),
     ButtonsModule.forRoot(),
     BsDatepickerModule.forRoot(),
-    NgxGalleryModule
-  ],
-  providers: [HousingService,
-              UserService,
-              AlertifyService,
-              AuthService,
-              PropertyDetailsResolverService
+    NgxGalleryModule,
 
-            ],
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptorService,
+      multi: true
+    },
+    DatePipe,
+    HousingService,
+    AlertifyService,
+    AuthService,
+    PropertyDetailsResolverService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

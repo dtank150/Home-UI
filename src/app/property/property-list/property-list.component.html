@@ -11,7 +11,7 @@
   <i *ngIf="SortDirection==='asc'" class="fas fa-sort-alpha-down"></i>
   <i *ngIf="SortDirection==='desc'" class="fas fa-sort-alpha-up"></i>
 </button>
-<div class="row">
+<div class="row mt-4">
   <div *ngFor="let property of properties|filter:SearchCity:'City'|sort:[SortbyParam,SortDirection]" class="shadow-lg col-sm-4 p-3">
     <app-property-card [property]="property"></app-property-card>
   </div>

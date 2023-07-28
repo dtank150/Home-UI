@@ -13,6 +13,7 @@ import { HousingService } from 'src/app/service/housing.service';
 export class PropertyDetailComponent implements OnInit {
   public propertyId!: number;
   property = new Property();
+  // public mainPhotoUrl: string = null;
   galleryOptions!: NgxGalleryOptions[];
   galleryImages!: NgxGalleryImage[];
 
@@ -28,6 +29,17 @@ export class PropertyDetailComponent implements OnInit {
       this.property = data.prp as Property;
       // console.log(this.property.photos);
     });
+    // this.property.age = this.service.getPropertyAge(this.property.estPossessionOn);
+    if (this.property.estPossessionOn) {
+      const estPossessionDate = new Date(this.property.estPossessionOn);
+      this.property.age = this.service.getPropertyAge(estPossessionDate);
+    } else {
+      // Handle the case where estPossessionOn is undefined or null
+      // For example, you can set a default age value or display an error message.
+      this.property.age = "Unknown";
+      console.log(this.property.photo);
+    }
+
 
     this.galleryOptions = [
       {
@@ -72,7 +84,28 @@ export class PropertyDetailComponent implements OnInit {
       }
 
     ];
+
   }
+  // changePrimaryPhoto(mainPhotoUrl: string){
+  //   this.mainPhotoUrl = mainPhotoUrl;
+  // }
+//   getPeopertyPhotos():NgxGalleryImage[]{
+//     const  photosUrl: NgxGalleryImage[] = [];
+//     for(const photo of this.property.photos)
+//     {
+//        if(photo.isPrimary){
+//            this.mainPhotoUrl = photo.imageUrl;
+//        }
+//        else{
+//         photosUrl.push({
+//           small:photo.imageUrl,
+//           medium:photo.imageUrl,
+//           big:photo.imageUrl
+//         });
+//        }
+//     }
+//     return photosUrl;
+//   }
 }
 
 

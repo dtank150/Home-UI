@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { User } from 'src/app/model/user';
-import { UserService } from 'src/app/service/user.service';
+import { UserForRegister } from 'src/app/model/user';
+
 import { AlertifyService } from 'src/app/service/alertify.service';
+import { AuthService } from 'src/app/service/auth.service';
 
 
 @Component({
@@ -14,10 +15,10 @@ import { AlertifyService } from 'src/app/service/alertify.service';
 export class UserRegisterComponent implements OnInit {
 
   registrationForm!:FormGroup;
-  user!: User;
+  user!: UserForRegister;
   userSubmited!: boolean;
 
-  constructor(private fb: FormBuilder, private userService:UserService, private alertify:AlertifyService) { }
+  constructor(private fb: FormBuilder, private Service:AuthService, private alertify:AlertifyService) { }
 
   ngOnInit(): void {
     this.createRegister();
@@ -27,14 +28,14 @@ export class UserRegisterComponent implements OnInit {
     this.registrationForm = this.fb.group({
       userName: new FormControl(null, [Validators.required, Validators.minLength(2), Validators.pattern("[a-zA-Z].*")]),
       email: new FormControl(null, [Validators.required, Validators.email]),
-      pwd: new FormControl(null, [Validators.required, Validators.minLength(8), Validators.maxLength(15)]),
+      password: new FormControl(null, [Validators.required, Validators.minLength(8), Validators.maxLength(15)]),
       cpwd: new FormControl(null, [Validators.required]),
       mobile: new FormControl(null, [Validators.required, Validators.maxLength(10), Validators.pattern("[0-9]*")])
     }, { validators: UserRegisterComponent.PasswordMatchingValidators });
   }
 
   static PasswordMatchingValidators(fg: FormGroup): ValidationErrors | null {
-    return fg.get('pwd')?.value === fg.get('cpwd')?.value ? null : { notmatched: true };
+    return fg.get('password')?.value === fg.get('cpwd')?.value ? null : { notmatched: true };
   }
 
   get userName():FormControl{
@@ -49,8 +50,8 @@ export class UserRegisterComponent implements OnInit {
     return this.registrationForm.get("mobile") as FormControl;
   }
 
-  get Pwd():FormControl{
-    return this.registrationForm.get("pwd") as FormControl;
+  get password():FormControl{
+    return this.registrationForm.get("password") as FormControl;
   }
 
   get Cpwd():FormControl{
@@ -62,21 +63,18 @@ export class UserRegisterComponent implements OnInit {
         this.userSubmited =true;
         if(this.registrationForm.valid){
           //this.user = Object.assign(this.user, this.registrationForm.value);
-          this.userService.addUser(this.userData());
-          this.registrationForm.reset();
+          this.Service.registerUser(this.userData()).subscribe(() => {
+            this.registrationForm.reset();
           this.userSubmited = false;
           this.alertify.success("Congrats,  You are successfully registerd");
+          });
         }
-        else{
-          this.alertify.error("Kindly Provide Required Field");
-        }
-
       }
-  userData(): User{
+  userData(): UserForRegister{
         return this.user = {
           userName: this.userName.value,
           email:this.Email.value,
-          pwd:this.Pwd.value,
+          password:this.password.value,
           mobile:this.mobile.value
         }
       }

@@ -5,8 +5,9 @@ import { TabsetComponent } from 'ngx-bootstrap/tabs';
 import { IPropertyBase } from 'src/app/model/Ipropertybase';
 import { Property } from 'src/app/model/property';
 import { HousingService } from 'src/app/service/housing.service';
-import * as alertyfy from 'alertifyjs';
 import { AlertifyService } from 'src/app/service/alertify.service';
+import { Ikeyvaluepair } from 'src/app/model/Ikeyvaluepair';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -23,32 +24,44 @@ export class AddPropertyComponent implements OnInit {
   property = new Property();
 
 //will come from masters
-  propertyTypes: Array<string> = ["House", "Apartment", "Duplex"]
-  furnishTypes: Array<string> = ["Fully", "Semi", "Unfurnished"]
+  // propertyTypes: Array<string> = ["House", "Apartment", "Duplex"]
+  // furnishTypes: Array<string> = ["Fully", "Semi", "Unfurnished"]
+  propertyTypes!: Ikeyvaluepair[];
+  furnishTypes! : Ikeyvaluepair[];
   cityList!:any[];
 
   propertyView: IPropertyBase = {
-    Id: undefined,
-    Name: '',
-    Price: undefined,
-    SellRent: undefined,
-    PType: '',
-    FType: '',
-    BHK: undefined,
-    BuiltArea: undefined,
-    City: '',
-    RTM: ''
+    id: undefined,
+    name: '',
+    price: undefined,
+    sellRent: undefined,
+    furnishingType: '',
+    propertyType: '',
+    bhk: undefined,
+    builtArea: undefined,
+    city: '',
+    readyToMove: true
   };
 
 
 
-  constructor(private fb: FormBuilder ,private router:Router, private housingService:HousingService, private alertyfy:AlertifyService) { }
+  constructor(private fb: FormBuilder ,private router:Router, private housingService:HousingService, private alertyfy:AlertifyService, private datepipe:DatePipe) { }
 
   ngOnInit() {
+    if(!localStorage.getItem('userName')){
+      this.alertyfy.error('You must be looged in to add a property');
+      this.router.navigate(['user/login']);
+    }
     this.CreateAddPropertyForm();
     this.housingService.getAllCities().subscribe(data => {
       this.cityList = data;
       console.log(data);
+    });
+    this.housingService.getPropertyTypes().subscribe(data =>{
+      this.propertyTypes = data;
+    });
+    this.housingService.getFurnishingTypes().subscribe(data =>{
+      this.furnishTypes = data;
     });
   }
 
@@ -65,7 +78,7 @@ export class AddPropertyComponent implements OnInit {
     PriceInfo:this.fb.group({
       Price: [null, Validators.required],
       BuiltArea: [null, Validators.required],
-      CarpetArea:[null],
+      CarpetArea:[0],
       Security:[0],
       Maintenance:[0]
     }),
@@ -175,42 +188,45 @@ export class AddPropertyComponent implements OnInit {
     this.NextClicked = true;
     if(this.AllTabsValid()){
       this.mapProperty();
-      this.housingService.addProperty(this.property);
-      this.alertyfy.success('Congrats, your property listed successfully on our website');
-      console.log(this.addPropertyForm);
+      this.housingService.addProperty(this.property).subscribe(() => {
+        this.alertyfy.success('Congrats, your property listed successfully on our website');
+        console.log(this.addPropertyForm);
 
-      if(this.SellRent.value === '2'){
-        this.router.navigate(['/rent-property'])
-      } else{
-        this.router.navigate(['/'])
-      }
+        if(this.SellRent.value === '2'){
+          this.router.navigate(['/rent-property'])
+        } else{
+          this.router.navigate(['/'])
+        }
+      });
     }else{
       this.alertyfy.error('Please review the form and provide all valid entries');
     }
   }
   mapProperty():void{
-    this.property.Id = this.housingService.newPropID();
-    this.property.SellRent = +this.SellRent.value;
-    this.property.BHK = this.BHK.value;
-    this.property.PType = this.PType.value;
-    this.property.Name = this.Name.value;
-    this.property.City = this.City.value;
-    this.property.FType = this.FType.value;
-    this.property.Price = this.Price.value;
-    this.property.Security = this.Security.value;
-    this.property.Maintenance = this.Maintenance.value;
-    this.property.BuiltArea = this.BuiltArea.value;
-    this.property.CarpetArea = this.CarpetArea.value;
-    this.property.FloorNo = this.FloorNo.value;
-    this.property.TotalFloor = this.TotalFloor.value;
-    this.property.Address = this.Address.value;
-    this.property.Address2 = this.LandMark.value;
-    this.property.RTM = this.RTM.value;
-    this.property.AOP = this.AOP.value;
-    this.property.Gated = this.Gated.value;
-    this.property.MainEntrance = this.MainEntrance.value;
-    this.property.Posession = this.PossessionOn.value;
-    this.property.Description = this.Description.value;
+    this.property.id = this.housingService.newPropID();
+    this.property.sellRent = +this.SellRent.value;
+    this.property.bhk = this.BHK.value;
+    this.property.propertyTypeId = this.PType.value;
+    this.property.name = this.Name.value;
+    this.property.cityId = this.City.value;
+    this.property.furnishingTypeId = this.FType.value;
+    this.property.price = this.Price.value;
+    this.property.security = this.Security.value;
+    this.property.maintenance = this.Maintenance.value;
+    this.property.builtArea = this.BuiltArea.value;
+    this.property.carpetArea = this.CarpetArea.value;
+    this.property.floorNo = this.FloorNo.value;
+    this.property.totalFloors = this.TotalFloor.value;
+    this.property.address = this.Address.value;
+    this.property.address2 = this.LandMark.value;
+    this.property.readyToMove = this.RTM.value;
+
+    this.property.gated = this.Gated.value;
+    this.property.mianEntrance = this.MainEntrance.value;
+    const transformedValue = this.datepipe.transform(this.PossessionOn.value);
+this.property.estPossessionOn = transformedValue !== null ? transformedValue : ''; // Provide a default value if transformedValue is null
+
+    this.property.description = this.Description.value;
     this.property.PostedOn =  new Date().toString();
   }
   AllTabsValid():boolean{
@@ -238,6 +254,9 @@ export class AddPropertyComponent implements OnInit {
         this.formTabs.tabs[NexttabId].active = true;
       }
 
+    }
+    onPriceInputChange(value: string) {
+      this.propertyView.price = Number(value);
     }
 
 }
